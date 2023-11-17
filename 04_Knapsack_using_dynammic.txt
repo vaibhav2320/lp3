@@ -1,0 +1,94 @@
+// Dynamic programming
+#include <iostream>
+using namespace std;
+
+// Returns the value of maximum profit using top-down dynamic programming
+int knapSackRec(int W, int wt[], int val[], int index, int **dp)
+{
+    // base condition
+    if (index < 0)
+        return 0;
+
+    // Check if the result is already computed
+    if (dp[index][W] != -1)
+        return dp[index][W];
+
+    if (wt[index] > W)
+    {
+        // Store the value of the function call stack in the table before returning
+        dp[index][W] = knapSackRec(W, wt, val, index - 1, dp);
+        return dp[index][W];
+    }
+    else
+    {
+        // Store value in a table before returning
+        dp[index][W] = max(val[index] + knapSackRec(W - wt[index], wt, val, index - 1, dp),
+                           knapSackRec(W, wt, val, index - 1, dp));
+
+        // Return value of the table after storing
+        return dp[index][W];
+    }
+}
+
+// Main function to initialize the memoization table and call the recursive function
+int knapSack(int W, int wt[], int val[], int n)
+{
+    // double pointer to declare the table dynamically
+    int **dp;
+    dp = new int *[n];
+
+    // loop to create the table dynamically
+    for (int i = 0; i < n; i++)
+        dp[i] = new int[W + 1];
+
+    // loop to initially fill the table with -1
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < W + 1; j++)
+            dp[i][j] = -1;
+
+    // Call the recursive function
+    return knapSackRec(W, wt, val, n - 1, dp);
+}
+
+// Display weights and profits
+void displayWeightsAndProfits(int wt[], int val[], int n)
+{
+    cout << "Weights: ";
+    for (int i = 0; i < n; i++)
+    {
+        cout << wt[i] << " ";
+    }
+    cout << endl;
+
+    cout << "Profits: ";
+    for (int i = 0; i < n; i++)
+    {
+        cout << val[i] << " ";
+    }
+    cout << endl;
+}
+
+// Driver Code
+int main()
+{
+    int profit[] = {60, 100, 120};
+    int weight[] = {10, 20, 30};
+    int knapsackCapacity = 50;
+    int n = sizeof(profit) / sizeof(profit[0]);
+
+    // Display weights, profits, and knapsack capacity
+    cout << "Knapsack Items:" << endl;
+    displayWeightsAndProfits(weight, profit, n);
+    cout << "Knapsack Capacity: " << knapsackCapacity << endl;
+
+    // Output the maximum profit
+    cout << "\nMaximum profit in the knapsack: " << knapSack(knapsackCapacity, weight, profit, n) << endl;
+
+    return 0;
+}
+/*
+W-remaining capacity;
+wt-weight
+val-profit
+index-currentIndex
+dp-memoization*/
